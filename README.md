@@ -12,7 +12,7 @@ para futuros trabajos.
 
 El lenguaje inicial de desarrollo es **Python 2.7** y utilizamos nuestra
 propia librería basada en **pygame** (básicamente un wrapper) llamada
-"easyvideo" (para gráficos 2D) y que se irá ampliando según vayamos necesitando
+*easyvideo* (para gráficos 2D) y que se irá ampliando según vayamos necesitando
 nuevas funcionalidades.
 
 Llevaremos un log de desarrollo en la wiki del proyecto.
@@ -20,7 +20,7 @@ Llevaremos un log de desarrollo en la wiki del proyecto.
 ### Pruebas
 
 El juego cuenta con una serie de pruebas de integración, las pruebas a un nivel
-de detalle mayor se encuentran en el propio repositorio de "easyvideo".
+de detalle mayor se encuentran en el propio repositorio de *easyvideo*.
 
 Actualmente para ejecutar las pruebas hay que instalar los siguientes
 componentes:
