@@ -36,6 +36,8 @@ def main():
                        pelusa_frames.animation_loop, 6)
     pelusa_actions.add('MOVE_RIGHT',
                        pelusa_frames.horizontal_flip.animation_loop, 6)
+    pelusa_actions.add('DYING',
+                       pelusa_frames.animation, 6)
 
     bullet_actions = Animations()
     bullet_actions.add('MOVE_UP',

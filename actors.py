@@ -16,7 +16,13 @@ class Actor(easyvideo.sprites.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.horde = None
+        self.life = 1
 
+    def hit(self):
+        self.life -= 1
+        if self.life <= 0:
+            self.change_state('DYING')
+        
     def change_state(self, state):
         raise NotImplementedError()
 

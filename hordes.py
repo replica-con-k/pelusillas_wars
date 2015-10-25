@@ -7,6 +7,7 @@ from easyvideo.sprites import Group
 # or something like that.
 import pygame
 
+
 class Horde(object):
     def __init__(self, factory, spr_group=None, animations=None):
         self.__group = Group() if spr_group is None else spr_group
@@ -120,5 +121,7 @@ class Shot(Uniform):
         Uniform.update(self)
         for actor in self.elements:
             for target in self.__targets:
-                if actor.collide(target):
-                    print "hit"
+                target_impacted = actor.collide(target)
+                if target_impacted:
+                    target_impacted.hit()
+                    actor.hit()
