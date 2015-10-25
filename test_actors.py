@@ -9,9 +9,7 @@ from easyvideo.animation import Animations
 import easyvideo.animation
 import easyvideo.sprites
 
-# This import should be replaced for other like "easyevents"
-# or something like that.
-import pygame
+import easyevents
 
 import actors
 import hordes
@@ -64,14 +62,13 @@ def main():
     
     player = hordes.Player(animations=pelusa_actions,
                            factory=actors.PelusaZombie)
+    easyevents.ROOT.add_subscriptor('PLAYER', player)
+    
     player.new_member((512, 600), pelusa_actions).speed_x = 3
     player.set_weapon(player_shots)
     
     for frame in range(500):
-        # pygame should be replaced for a higher level library
-        for event in pygame.event.get():
-            player.handle_event(event)
-
+        easyevents.process_events()
         screen.playfield.clear()
         horde.draw(screen.playfield.layer)
         horde.update()

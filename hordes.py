@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from easyvideo.sprites import Group
+from easyevents.channels import Subscriptor
 
-# This import should be replaced for other like "easyevents"
-# or something like that.
-import pygame
-
+import easyevents
 
 class Horde(object):
     def __init__(self, factory, spr_group=None, animations=None):
@@ -76,7 +74,7 @@ class Uniform(Horde):
             element.change_state(new_state)
 
 
-class Player(Uniform):
+class Player(Uniform, Subscriptor):
     def __init__(self, factory, spr_group=None, animations=None):
         Uniform.__init__(self, factory, spr_group, animations)
         self.__weapon = None
@@ -86,15 +84,14 @@ class Player(Uniform):
         return self.elements[0].rect.center
         
     def handle_event(self, event):
-        # pygame should be replaced for a higher level library
-        if event.type == pygame.KEYUP:
+        if event.type == easyevents.KEYUP:
             self.notify_state_changed('STOP')
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+        elif event.type == easyevents.KEYDOWN:
+            if event.key == easyevents.K_LEFT:
                 self.notify_state_changed('MOVE_LEFT')
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == easyevents.K_RIGHT:
                 self.notify_state_changed('MOVE_RIGHT')
-            elif event.key == pygame.K_SPACE:
+            elif event.key == easyevents.K_SPACE:
                 if self.__weapon is not None:
                     self.notify_state_changed('SHOTING')
                     self.__weapon.new_member(self.position)
