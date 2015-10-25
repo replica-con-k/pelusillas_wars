@@ -8,21 +8,26 @@ from easyvideo.sprites import Group
 import pygame
 
 class Horde(object):
-    def __init__(self, spr_group=None, factory=None):
+    def __init__(self, factory, spr_group=None, animations=None):
         self.__group = Group() if spr_group is None else spr_group
         self.__elements = []
+        self.__animations = animations
         self.__factory = factory
 
-    def new_member(self, *args):
-        if self.__factory is not None:
-            element = self.__factory(*args)
-            self.add(element)
+    def new_member(self, position, animations=None):
+        animations = animations if animations is not None else self.__animations
+        element = self.__factory(position, animations)
+        self.add(element)
         return element
 
     @property
     def elements(self):
         return self.__elements
-    
+
+    @property
+    def sprite_group(self):
+        return self.__group
+
     def add(self, actor):
         self.__elements.append(actor)
         self.__group.add(actor)
@@ -37,7 +42,7 @@ class Horde(object):
         finally:
             if self.__group.has(actor):
                 self.__group.remove(actor)
-            actor.horde = Alone()
+            actor.horde = Alone(self.__factory)
         
     def notify_state_changed(self, new_state, actor=None):
         '''actor: Actor() who change the state'''
@@ -54,16 +59,16 @@ class Horde(object):
         
 
 class Alone(Horde):
-    def __init__(self, spr_group=None, factory=None):
-        Horde.__init__(self, spr_group, factory)
+    def __init__(self, factory, spr_group=None, animations=None):
+        Horde.__init__(self, factory, spr_group, animations)
 
     def notify_state_changed(self, new_state, actor):
         actor.change_state(new_state)
 
 
 class Uniform(Horde):
-    def __init__(self, spr_group=None, factory=None):
-        Horde.__init__(self, spr_group, factory)
+    def __init__(self, factory, spr_group=None, animations=None):
+        Horde.__init__(self, factory, spr_group, animations)
 
     def notify_state_changed(self, new_state, actor=None):
         for element in self.elements:
@@ -71,8 +76,13 @@ class Uniform(Horde):
 
 
 class Player(Uniform):
-    def __init__(self, spr_group=None, factory=None):
-        Uniform.__init__(self, spr_group, factory)
+    def __init__(self, factory, spr_group=None, animations=None):
+        Uniform.__init__(self, factory, spr_group, animations)
+        self.__weapon = None
+
+    @property
+    def position(self):
+        return self.elements[0].rect.center
         
     def handle_event(self, event):
         # pygame should be replaced for a higher level library
@@ -83,4 +93,32 @@ class Player(Uniform):
                 self.notify_state_changed('MOVE_LEFT')
             elif event.key == pygame.K_RIGHT:
                 self.notify_state_changed('MOVE_RIGHT')
+            elif event.key == pygame.K_SPACE:
+                if self.__weapon is not None:
+                    self.notify_state_changed('SHOTING')
+                    self.__weapon.new_member(self.position)
                 
+    def set_weapon(self, weapon):
+        self.__weapon = weapon
+
+
+class Shot(Uniform):
+    def __init__(self, factory, spr_group=None, animations=None):
+        Horde.__init__(self, factory, spr_group, animations)
+        self.__targets = []
+
+    def notify_state_changed(self, new_state, actor=None):
+        for element in self.elements:
+            element.change_state(new_state)
+
+    def add_targets(self, target):
+        target = target.sprite_group
+        if target not in self.__targets:
+            self.__targets.append(target)
+
+    def update(self):
+        Uniform.update(self)
+        for actor in self.elements:
+            for target in self.__targets:
+                if actor.collide(target):
+                    print "hit"

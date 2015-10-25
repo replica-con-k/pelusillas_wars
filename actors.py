@@ -70,3 +70,38 @@ class PelusaZombie(Actor):
         self.__life()
         self.image = self.anims.update()
         
+
+class Bullet(Actor):
+    def __init__(self, position, animations):
+        Actor.__init__(self, position, animations)
+        self.__states = {
+            'MOVE_UP': self.__move_up,
+            'MOVE_DOWN': self.__move_down,
+            'DYING': self.__dying
+        }
+        self.change_state('MOVE_UP')
+        self.speed = 10
+        self.area = easyvideo.screen.get_area()
+
+    def change_state(self, state):
+        if state not in self.__states.keys():
+            return
+        self.__life = self.__states[state]
+        self.anims.change_animation(state)
+    
+    def __move_up(self):
+        self.rect.y -= self.speed
+        if self.rect.bottom < self.area.top:
+            self.notify_horde('DYING')
+
+    def __move_down(self):
+        self.rect.y += self.speed
+        if self.rect.top > self.area.bottom:
+            self.notify_horde('DYING')
+
+    def __dying(self):
+        self.kill()
+
+    def update(self):
+        self.__life()
+        self.image = self.anims.update()
