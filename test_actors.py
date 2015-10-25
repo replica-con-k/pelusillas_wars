@@ -42,10 +42,8 @@ def main():
     bullet_actions = Animations()
     bullet_actions.add('MOVE_UP',
                        bullet_frames.animation)
-    # bullet_actions.add('MOVE_DOWN',
-    #                    bullet_frames.vertical_flip.animation)
     bullet_actions.add('MOVE_DOWN',
-                       bullet_frames.animation)
+                       bullet_frames.vertical_flip.animation)
     bullet_actions.add('DYING',
                        bullet_frames.animation)
 
