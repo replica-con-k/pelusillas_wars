@@ -13,72 +13,19 @@ import easyevents
 
 import actors
 import hordes
+import game
 
 def main():
-    screen = Screen()
-    screen.background.draw(easyvideo.image.load(
-        'data/background_test.jpg'), (0, 0))
-
-    pelusa_frames = FrameSet('data/pelusilla_01.png',
-                             'data/pelusilla_02.png',
-                             'data/pelusilla_03.png',
-                             'data/pelusilla_04.png',
-                             'data/pelusilla_05.png',
-                             'data/pelusilla_06.png',
-                             'data/pelusilla_07.png',
-                             'data/pelusilla_08.png')
-    bullet_frames = FrameSet('data/bullet_test.png')
-    
-    pelusa_actions = Animations()        
-    pelusa_actions.add('MOVE_LEFT',
-                       pelusa_frames.animation_loop, 6)
-    pelusa_actions.add('MOVE_RIGHT',
-                       pelusa_frames.horizontal_flip.animation_loop, 6)
-    pelusa_actions.add('DYING',
-                       pelusa_frames.animation, 6)
-
-    bullet_actions = Animations()
-    bullet_actions.add('MOVE_UP',
-                       bullet_frames.animation)
-    bullet_actions.add('MOVE_DOWN',
-                       bullet_frames.vertical_flip.animation)
-    bullet_actions.add('DYING',
-                       bullet_frames.animation)
-
-
-    horde = hordes.Uniform(animations=pelusa_actions,
-                           factory=actors.PelusaZombie)
+    main_game = game.Game()
+    horde = main_game.new_enemy(actors.PelusaZombie)
     horde.new_member((0, 100)).speed_x = 2
     horde.new_member((400, 300)).speed_x = 2
-
-    singles = hordes.Alone(animations=pelusa_actions,
-                           factory=actors.PelusaZombie)
-    singles.new_member((600, 100)).speed_x = 2
-
-    player_shots = hordes.Shot(animations=bullet_actions,
-                               factory=actors.Bullet)
-    player_shots.add_targets(singles)
-    player_shots.add_targets(horde)
-    
-    player = hordes.Player(animations=pelusa_actions,
-                           factory=actors.PelusaZombie)
+    main_game.add_horde(horde)
+    player = main_game.new_player()
     easyevents.ROOT.add_subscriptor('PLAYER', player)
+    player.new_member((512, 600), main_game.player).speed_x = 3
     
-    player.new_member((512, 600), pelusa_actions).speed_x = 3
-    player.set_weapon(player_shots)
-    
-    for frame in range(500):
-        easyevents.process_events()
-        screen.playfield.clear()
-        horde.draw(screen.playfield.layer)
-        horde.update()
-        singles.draw(screen.playfield.layer)
-        singles.update()
-        player.draw(screen.playfield.layer)
-        player.update()
-        player_shots.draw(screen.playfield.layer)
-        player_shots.update()
-        screen.update()
+    main_game.start()
         
 if __name__ == '__main__':
     main()
